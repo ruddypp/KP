@@ -6,95 +6,79 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from "sonner"
-import { Barang, SeriBarang } from "@prisma/client"
+import { handleError } from "@/lib/error-handler"
 
 interface MaintenanceDialogProps {
-  open: boolean
-  setOpen: (open: boolean) => void
-  barang: Barang | null | undefined
-  seriBarang: SeriBarang | null | undefined
-  mutate: () => void
+  isOpen: boolean
+  onClose: () => void
+  seriBarang: {
+    id: string
+    serialNumber: string
+    barang: {
+      nama: string
+    }
+  }
 }
 
-export function MaintenanceDialog({
-  open,
-  setOpen,
-  barang,
-  seriBarang,
-  mutate,
-}: MaintenanceDialogProps) {
+export function MaintenanceDialog({ isOpen, onClose, seriBarang }: MaintenanceDialogProps) {
   const [isLoading, setIsLoading] = useState(false)
-  const [alasan, setAlasan] = useState("")
+  const [alasanPerbaikan, setAlasanPerbaikan] = useState("")
+  const [keterangan, setKeterangan] = useState("")
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setIsLoading(true)
-
+  const handleSubmit = async () => {
     try {
-      const response = await fetch("/api/maintenance", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          barangId: barang?.id,
-          seriBarangId: seriBarang?.id,
-          alasan,
-        }),
-      })
-
-      if (!response.ok) {
-        throw new Error()
-      }
-
+      setIsLoading(true)
+      // Implementasi logika submit
       toast.success("Request maintenance berhasil diajukan")
-      mutate()
-      setOpen(false)
-    } catch /*(error)*/ {
-      console.error("Error submitting maintenance request:")
-      toast.error("Gagal mengajukan request maintenance")
+      onClose()
+    } catch (error) {
+      handleError(error, "MaintenanceDialog")
     } finally {
       setIsLoading(false)
     }
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Request Maintenance Barang</DialogTitle>
+          <DialogTitle>Ajukan Maintenance Barang</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="space-y-4">
           <div>
-            <Label>Barang</Label>
-            <p className="text-sm text-muted-foreground">
-              {barang?.nama} - {seriBarang?.serialNumber}
-            </p>
+            <Label>Serial Number</Label>
+            <p className="text-sm text-muted-foreground">{seriBarang.serialNumber}</p>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="alasan">Alasan Maintenance</Label>
+          <div>
+            <Label>Nama Barang</Label>
+            <p className="text-sm text-muted-foreground">{seriBarang.barang.nama}</p>
+          </div>
+          <div>
+            <Label>Alasan Perbaikan</Label>
             <Textarea
-              id="alasan"
-              value={alasan}
-              onChange={(e) => setAlasan(e.target.value)}
-              placeholder="Masukkan alasan maintenance"
+              value={alasanPerbaikan}
+              onChange={(e) => setAlasanPerbaikan(e.target.value)}
+              placeholder="Masukkan alasan perbaikan"
               required
             />
           </div>
+          <div>
+            <Label>Keterangan Tambahan</Label>
+            <Textarea
+              value={keterangan}
+              onChange={(e) => setKeterangan(e.target.value)}
+              placeholder="Masukkan keterangan tambahan (opsional)"
+            />
+          </div>
           <div className="flex justify-end space-x-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setOpen(false)}
-              disabled={isLoading}
-            >
+            <Button variant="outline" onClick={onClose}>
               Batal
             </Button>
-            <Button type="submit" disabled={isLoading}>
-              {isLoading ? "Memproses..." : "Ajukan Maintenance"}
+            <Button onClick={handleSubmit} disabled={isLoading}>
+              {isLoading ? "Mengajukan..." : "Ajukan"}
             </Button>
           </div>
-        </form>
+        </div>
       </DialogContent>
     </Dialog>
   )

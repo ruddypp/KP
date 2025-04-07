@@ -3,10 +3,9 @@
 // import { MaintenanceClient } from "./maintenance-client";
 // Jika ada di src/components/..., impornya mungkin:
 // import { MaintenanceClient } from "@/components/maintenance-client";
-// Placeholder sementara:
-const MaintenanceClient = ({ kategoriList }: any) => <div>Maintenance Client Placeholder (Kategori: {JSON.stringify(kategoriList)})</div>;
 
 import { prisma } from "@/lib/prisma"
+import { MaintenanceClient } from "./maintenance-client";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;

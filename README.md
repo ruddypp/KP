@@ -36,35 +36,35 @@ Sistem manajemen inventaris modern yang dibangun menggunakan Next.js 14, diranca
 ## Setup Project
 
 1.  **Clone repository**
-    ```bash
-    git clone [repository-url]
-    cd project-paramata
-    ```
+```bash
+git clone [repository-url]
+cd project-paramata
+```
 
 2.  **Install dependencies**
-    ```bash
-    npm install
-    ```
+```bash
+npm install
+```
 
 3.  **Setup environment variables**
     Salin `.env.example` menjadi `.env`.
-    ```bash
-    cp .env.example .env
-    ```
+```bash
+cp .env.example .env
+```
     Edit file `.env` dan isi variabel yang diperlukan (minimal `DATABASE_URL`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`, dan kredensial Pusher jika digunakan).
 
 4.  **Setup database**
     Pastikan server PostgreSQL Anda berjalan.
-    ```bash
-    npx prisma generate
-    npx prisma db push
-    ```
+```bash
+npx prisma generate
+npx prisma db push
+```
     *Catatan: `db push` cocok untuk development. Untuk produksi, gunakan `prisma migrate deploy`.* 
 
 5.  **Jalankan development server**
-    ```bash
-    npm run dev
-    ```
+```bash
+npm run dev
+```
     Aplikasi akan tersedia di `http://localhost:3000`.
 
 ## Struktur Project (Ringkasan)

@@ -76,8 +76,8 @@ export function LoginForm({ className, ...props }: UserAuthFormProps) { // Gunak
           if (session?.user?.role === 'ADMIN') {
             router.push('/admin');
           } else {
-            // Asumsikan role lain (USER) diarahkan ke /user
-            router.push('/user');
+            // Ubah redirect default user ke /user/request
+            router.push('/user/request');
           }
         }, 1000); // Delay 1 detik
       }

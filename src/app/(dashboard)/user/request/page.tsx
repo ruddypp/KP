@@ -5,14 +5,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { DashboardHeader } from "@/components/layout/header";
 import { DashboardShell } from "@/components/layout/shell";
-
-// TODO: Pastikan komponen RequestClient ada dan path impornya benar.
-// Jika ada di (dashboard)/user/request/request-client.tsx, impornya mungkin:
-// import { RequestClient } from "./request-client"; 
-// Jika ada di src/components/..., impornya mungkin:
-// import { RequestClient } from "@/components/request-client"; 
-// Placeholder sementara:
-const RequestClient = ({ data }: any) => <div>Request Client Placeholder (Data: {JSON.stringify(data)})</div>;
+import { RequestClient } from "./request-client";
 
 export const metadata: Metadata = {
   title: "Request Penggunaan",

@@ -13,13 +13,20 @@ const barangSchema = z.object({
 
 // GET /api/barang - Mengambil daftar barang
 export async function GET(req: Request) {
-  const session = await getServerSession(authOptions);
-  if (session?.user?.role !== 'ADMIN') {
-    return new NextResponse(JSON.stringify({ message: 'Unauthorized' }), { status: 401 });
-  }
+  // Baca search params dari URL
+  const { searchParams } = new URL(req.url);
+  const kategoriId = searchParams.get('kategoriId'); // Dapatkan kategoriId jika ada
 
   try {
+    // Buat klausa where kosong
+    let whereClause = {};
+    // Jika kategoriId ada, tambahkan ke klausa where
+    if (kategoriId) {
+      whereClause = { kategoriId: kategoriId };
+    }
+
     const barang = await prisma.barang.findMany({
+      where: whereClause, // Terapkan filter
       include: {
         kategori: {
           select: { id: true, namaKategori: true }
