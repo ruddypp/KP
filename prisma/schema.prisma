@@ -1,0 +1,121 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(USER)
+  requests  RequestPenggunaan[]
+  maintenance RequestMaintenance[]
+  log       LogAktivitas[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Kategori {
+  id           String   @id @default(cuid())
+  namaKategori String   @unique
+  barang       Barang[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Barang {
+  id          String    @id @default(cuid())
+  nama        String
+  kategori    Kategori  @relation(fields: [kategoriId], references: [id])
+  kategoriId  String
+  seri        SeriBarang[]
+  log         LogAktivitas[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model SeriBarang {
+  id            String    @id @default(cuid())
+  barang        Barang    @relation(fields: [barangId], references: [id])
+  barangId      String
+  serialNumber  String    @unique
+  status        Status    @default(AVAILABLE)
+  jumlah        Int       @default(1)
+  threshold     Int       @default(5)
+  requests      RequestPenggunaan[]
+  maintenance   RequestMaintenance[]
+  log           LogAktivitas[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model RequestPenggunaan {
+  id          String     @id @default(cuid())
+  user        User       @relation(fields: [userId], references: [id])
+  userId      String
+  seriBarang  SeriBarang @relation(fields: [seriId], references: [id])
+  seriId      String
+  status      String     @default("PENDING") // PENDING, APPROVED, REJECTED
+  alasan      String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model RequestMaintenance {
+  id            String     @id @default(cuid())
+  user          User       @relation(fields: [userId], references: [id])
+  userId        String
+  seriBarang    SeriBarang @relation(fields: [seriBarangId], references: [id])
+  seriBarangId  String
+  alasanPerbaikan String
+  status        String     @default("PENDING") // PENDING, APPROVED, REJECTED
+  keterangan    String?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+}
+
+model LogAktivitas {
+  id        String     @id @default(cuid())
+  user      User       @relation(fields: [userId], references: [id])
+  userId    String
+  aksi      String
+  detail    String    
+  barang    Barang?    @relation(fields: [barangId], references: [id])
+  barangId  String?
+  seri      SeriBarang? @relation(fields: [seriId], references: [id])
+  seriId    String?
+  timestamp DateTime   @default(now())
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  userId    String
+  type      String   // REQUEST, STATUS_CHANGE, LOW_STOCK
+  createdAt DateTime @default(now())
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+enum Status {
+  AVAILABLE
+  USED
+  MAINTENANCE
+  DAMAGED
+}
